@@ -19,7 +19,7 @@ uv tool install vllm-mlx --python 3.12
 
 ### Ternary Bonsai 27B を 4 bit KV キャッシュ有効の OpenAI 互換サーバーで起動
 ```
-vllm-mlx serve "prism-ml/Ternary-Bonsai-27B-mlx-2bit" \
+vllm-mlx serve "t-kawata/Ternary-Bonsai-27B-mlx-2bit" \
     --port 8081 \
     --kv-cache-quantization \
     --kv-cache-quantization-bits 4 \
