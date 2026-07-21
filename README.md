@@ -72,7 +72,7 @@ cat <<EOF > ~/shyme/bifrost/config.json
           "models": ["ternary-bonsai-27b"],
           "weight": 1.0,
           "aliases": {
-            "ternary-bonsai-27b": "prism-ml/Ternary-Bonsai-27B-mlx-2bit"
+            "ternary-bonsai-27b": "t-kawata/Ternary-Bonsai-27B-mlx-2bit"
           }
         }
       ],
