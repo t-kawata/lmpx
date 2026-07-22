@@ -14,7 +14,10 @@ xcodebuild -downloadComponent MetalToolchain
 ### mlx-lmのインストール（本家mlxを使用。PrismMLフォークはうまく動かなかった。）
 ```
 uv python install 3.12
+
 uv tool install vllm-mlx --python 3.12
+or
+uv tool install mlx-lm --python 3.12
 ```
 
 ### Ternary Bonsai 27B を 4 bit KV キャッシュ有効の OpenAI 互換サーバーで起動
@@ -29,6 +32,8 @@ vllm-mlx serve "t-kawata/Ternary-Bonsai-27B-mlx-2bit" \
     --default-temperature 0.7 \
     --default-top-p 0.95 \
     --default-top-k 20
+or
+mlx_lm.server --model "t-kawata/Ternary-Bonsai-27B-mlx-2bit" --port 8081
 ```
 
 ### Bifrost ディレクトリ
