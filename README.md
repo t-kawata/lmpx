@@ -1,3 +1,32 @@
+### uv / cmake を入れる
+```
+curl -LsSf https://astral.sh/uv/install.sh | sh
+uv tool update-shell
+source ~/.zshrc
+source ~/.zshenv
+
+brew install cmake
+```
+
+### llama.cpp Metal Build
+```
+mkdir -m 755 -p ~/shyme
+cd ~/shyme
+git clone https://github.com/ggml-org/llama.cpp
+cd llama.cpp
+
+cmake -B build \
+  -DCMAKE_BUILD_TYPE=Release \
+  -DGGML_METAL=ON \
+  -DGGML_METAL_EMBED_LIBRARY=ON
+
+cmake --build build --config Release -j $(sysctl -n hw.ncpu)
+```
+
+---
+
+**以下、過去に試したが、不安定で使い物にならなかったもの**
+
 ### uv を入れる
 ```
 curl -LsSf https://astral.sh/uv/install.sh | sh
