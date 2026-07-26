@@ -23,6 +23,122 @@ cmake -B build \
 cmake --build build --config Release -j $(sysctl -n hw.ncpu)
 ```
 
+### download model (1-bit Bonsai 27B)
+```
+mkdir -p models
+hf download prism-ml/Bonsai-27B-gguf Bonsai-27B-Q1_0.gguf --local-dir ./models
+```
+
+### run llama-server
+```
+./build/bin/llama-server \
+  -m ./models/Bonsai-27B-Q1_0.gguf \
+  --host 0.0.0.0 --port 8081 \
+  -ngl 99 \
+  -c 262144 \
+  --cache-type-k q4_0 --cache-type-v q4_0 \
+  --temp 0.7 --top-p 0.95 --top-k 20
+```
+
+### Bifrost ディレクトリ
+```
+mkdir -p ~/shyme/bifrost
+```
+
+### Bifrost 設定
+```
+cat <<EOF > ~/shyme/bifrost/config.json
+{
+  "\$schema": "https://www.getbifrost.ai/schema",
+  "client": {
+    "enable_logging": false,
+    "enforce_auth_on_inference": false,
+    "drop_excess_requests": false
+  },
+  "providers": {
+    "deepseek-anthropic": {
+      "keys": [
+        {
+          "name": "deepseek-key",
+          "value": "env.DEEPSEEK_KEY",
+          "models": ["deepseek-v4-flash", "deepseek-v4-pro"],
+          "weight": 1.0
+        }
+      ],
+      "network_config": {
+        "base_url": "https://api.deepseek.com/anthropic",
+        "default_request_timeout_in_seconds": 120
+      },
+      "custom_provider_config": {
+        "base_provider_type": "anthropic"
+      }
+    },
+    "lmpx": {
+      "keys": [
+        {
+          "name": "lmpx-key",
+          "value": "dummy-key",
+          "models": ["ternary-bonsai-27b"],
+          "weight": 1.0,
+          "aliases": {
+            "ternary-bonsai-27b": "t-kawata/Ternary-Bonsai-27B-mlx-2bit"
+          }
+        }
+      ],
+      "network_config": {
+        "base_url": "http://127.0.0.1:8081",
+        "default_request_timeout_in_seconds": 600
+      },
+      "custom_provider_config": {
+        "base_provider_type": "openai",
+        "allowed_requests": {
+          "chat_completion": true,
+          "chat_completion_stream": true
+        },
+        "request_path_overrides": {
+          "chat_completion": "/v1/chat/completions",
+          "chat_completion_stream": "/v1/chat/completions"
+        }
+      }
+    }
+  },
+  "config_store": { "enabled": false }
+}
+EOF
+```
+
+### Bifrost 起動
+```
+DEEPSEEK_KEY=sk-c???????????????????? npx -y @maximhq/bifrost --transport-version v1.6.4 -app-dir ~/shyme/bifrost
+```
+
+### 動作確認
+```
+curl http://localhost:8080/anthropic/v1/messages \
+  -H "Content-Type: application/json" \
+  -H "anthropic-version: 2023-06-01" \
+  -d '{
+    "model": "ternary-bonsai-27b",
+    "max_tokens": 256,
+    "messages": [
+      {"role": "user", "content": "こんにちは、動作確認です"}
+    ],
+    "stream": false
+  }'
+
+curl http://localhost:8080/anthropic/v1/messages \
+  -H "Content-Type: application/json" \
+  -H "anthropic-version: 2023-06-01" \
+  -d '{
+    "model": "deepseek-anthropic/deepseek-v4-flash",
+    "max_tokens": 256,
+    "messages": [
+      {"role": "user", "content": "こんにちは、動作確認です"}
+    ],
+    "stream": false
+  }'
+```
+
 ---
 
 **以下、過去に試したが、不安定で使い物にならなかったもの**
