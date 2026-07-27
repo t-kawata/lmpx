@@ -55,11 +55,10 @@ hf download prism-ml/Bonsai-27B-gguf Bonsai-27B-Q1_0.gguf --local-dir ./models
 ./build/bin/llama-server \
   -m ./models/Bonsai-27B-Q1_0.gguf \
   --host 0.0.0.0 --port 8081 \
-  -ngl 99 \
-  -c 262144 \
-  -fa on \
+  -ngl 99 -c 262144 -fa on \
   --cache-type-k q4_0 --cache-type-v q4_0 \
-  --temp 0.7 --top-p 0.95 --top-k 20
+  --temp 0.7 --top-p 0.95 --top-k 20 \
+  --chat-template-file ./bonsai-chat-template.jinja
 ```
 
 ### Bifrost ディレクトリ
