@@ -1,9 +1,9 @@
 ### uv / cmake を入れる
 ```
 curl -LsSf https://astral.sh/uv/install.sh | sh
-uv tool update-shell
 source ~/.zshrc
 source ~/.zshenv
+uv tool update-shell
 
 brew install cmake
 ```
