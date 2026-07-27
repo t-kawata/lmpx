@@ -36,6 +36,12 @@ for field in reader.fields.values():
             f.write(template)
         print("saved", len(template), "chars")
 EOF
+
+cp bonsai-chat-template.jinja bonsai-chat-template.jinja.bak
+cat > fixup.sed <<'SEDEOF'
+s/{{- raise_exception('System message must be at the beginning.') }}/{{- '<|im_start|>system\\n' + content + '<|im_end|>\\n' }}/g
+SEDEOF
+sed -i '' -f fixup.sed bonsai-chat-template.jinja
 ```
 
 ### download model (1-bit Bonsai 27B)
