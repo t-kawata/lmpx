@@ -4,6 +4,7 @@ curl -LsSf https://astral.sh/uv/install.sh | sh
 source ~/.zshrc
 source ~/.zshenv
 uv tool update-shell
+uv python install 3.12
 
 brew install cmake
 ```
@@ -21,6 +22,20 @@ cmake -B build \
   -DGGML_METAL_EMBED_LIBRARY=ON
 
 cmake --build build --config Release -j $(sysctl -n hw.ncpu)
+```
+
+### get bonsai-chat-template.jinja
+```
+uv run --python 3.12 --with gguf python3 - <<'EOF'
+from gguf.gguf_reader import GGUFReader
+reader = GGUFReader("models/Bonsai-27B-Q1_0.gguf")
+for field in reader.fields.values():
+    if field.name == "tokenizer.chat_template":
+        template = bytes(field.parts[field.data[0]]).decode("utf-8")
+        with open("bonsai-chat-template.jinja", "w") as f:
+            f.write(template)
+        print("saved", len(template), "chars")
+EOF
 ```
 
 ### download model (1-bit Bonsai 27B)
